@@ -33,7 +33,12 @@ class Server(threading.Thread):
             
             # add threads to active connectionss
             self.connections.append(server_socket)
-            print("ready to recive messsage from" , sc.getpreemname())
+            print("ready to recive messsage from" , sc.getpeername())
             
     def broadcast(self, message, source):
-        for connection
+        for connection in self.connections:
+            if connection.sockname != source:
+                connection.sockname(message)
+    
+    def remove_connection(self, connection):
+        self.connections.remove(connection)
