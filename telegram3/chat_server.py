@@ -86,12 +86,14 @@ class ChatServer:
             self.save_message(sender, receiver, message)
             self.message_text.delete('1.0', 'end')
         else:
-            # Broadcast the message to all clients if no specific receiver
-            for client_addr in self.clients.values():
-                self.sock.sendto(f'{sender}:{receiver}:{message}'.encode('utf-8'), client_addr)
-            self.save_message(sender, receiver, message)
-            self.message_text.delete('1.0', 'end')
-            self.display_message(sender, message)
+            # # Broadcast the message to all clients if no specific receiver
+            # for client_addr in self.clients.values():
+            #     self.sock.sendto(f'{sender}:{receiver}:{message}'.encode('utf-8'), client_addr)
+            # self.save_message(sender, receiver, message)
+            # self.message_text.delete('1.0', 'end')
+            # self.display_message(sender, message)
+             print(f"Receiver '{receiver}' not found.")
+        self.message_text.delete('1.0', 'end')
 
     def receive_message(self):
         while True:
