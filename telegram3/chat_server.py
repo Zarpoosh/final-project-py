@@ -1,15 +1,16 @@
-
 import socket
 import tkinter as tk
 import sqlite3
 import threading
 from queue import Queue
+import ttkbootstrap as tb
 
 class ChatServer:
     def __init__(self, master):
         self.master = master
         self.master.title('Chat Server')
         self.master.geometry('400x600')
+        self.master.configure(padx=20, pady=20)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_address = ('localhost', 10000)
@@ -27,32 +28,46 @@ class ChatServer:
         ''')
         self.db.commit()
 
-        self.sender_label = tk.Label(master, text='Sender:')
-        self.sender_label.pack()
-        self.sender_entry = tk.Entry(master, width=20)
-        self.sender_entry.pack()
+        self.font = ('Helvetica', 12)
+        self.message_font = ('Arial', 10)
 
-        self.receiver_label = tk.Label(master, text='Receiver:')
-        self.receiver_label.pack()
-        self.receiver_entry = tk.Entry(master, width=20)
-        self.receiver_entry.pack()
+        self.style = tb.Style()
+        self.style.configure("TEntry", borderwidth=0)
+        
+        self.sender_label = tb.Label(master, text='Sender:', font=self.font)
+        self.sender_label.pack(pady=5)
 
-        self.message_label = tk.Label(master, text='Message:')
-        self.message_label.pack()
-        self.message_text = tk.Text(master, width=30, height=5)
-        self.message_text.pack()
+        self.sender_frame = tb.Frame(master, style="TFrame")
+        self.sender_frame.pack(pady=5, fill=tk.X)
+        self.sender_entry = tb.Entry(self.sender_frame, width=20, font=self.font, style="TEntry")
+        self.sender_entry.pack(padx=5, pady=5, fill=tk.X)
 
-        self.send_button = tk.Button(master, text='Send', command=self.send_message)
-        self.send_button.pack()
+        self.receiver_label = tb.Label(master, text='Receiver:', font=self.font)
+        self.receiver_label.pack(pady=5)
 
-        self.clients_label = tk.Label(master, text='Chat Page')
-        self.clients_label.pack()
-        # self.clients_list = tk.Listbox(master, width=30)
-        # self.clients_list.pack(fill=tk.BOTH, expand=True)
+        self.receiver_frame = tb.Frame(master, style="TFrame")
+        self.receiver_frame.pack(pady=5, fill=tk.X)
+        self.receiver_entry = tb.Entry(self.receiver_frame, width=20, font=self.font, style="TEntry")
+        self.receiver_entry.pack(padx=5, pady=5, fill=tk.X)
 
-        # self.messages_label = tk.Label(master, text='Messages:')
-        # self.messages_label.pack()
-        self.messages_list = tk.Listbox(master, width=30)
+        self.message_label = tb.Label(master, text='Message:', font=self.font)
+        self.message_label.pack(pady=5)
+
+        self.message_frame = tb.Frame(master, style="TFrame")
+        self.message_frame.pack(pady=5, fill=tk.X)
+        self.message_text = tk.Text(self.message_frame, width=30, height=5, font=self.font, bd=0)
+        self.message_text.pack(padx=5, pady=5, fill=tk.X)
+
+        self.send_button = tb.Button(master, text='Send', command=self.send_message, style="Primary.TButton")
+        self.send_button.pack(pady=10)
+
+        self.messages_label = tb.Label(master, text='Chat Page', font=self.font)
+        self.messages_label.pack(pady=5)
+
+        self.messages_frame = tb.Frame(master)
+        self.messages_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+
+        self.messages_list = tk.Listbox(self.messages_frame, font=self.message_font)
         self.messages_list.pack(fill=tk.BOTH, expand=True)
 
         self.clients = {}
@@ -98,7 +113,6 @@ class ChatServer:
                 for client_addr in self.clients.values():
                     self.sock.sendto(f'{sender}:{message}'.encode('utf-8'), client_addr)
 
-                # self.update_clients_list()
                 self.display_message(sender, message)
 
             self.master.after(100, self.process_queue)
@@ -115,11 +129,6 @@ class ChatServer:
         except Exception as e:
             print(f"Error saving message: {e}")
 
-    # def update_clients_list(self):
-    #     self.clients_list.delete(0, tk.END)
-    #     for client in self.clients.keys():
-    #         self.clients_list.insert(tk.END, client)
-
     def display_message(self, sender, message):
         self.messages_list.insert(tk.END, f'{sender}:>> {message}')
 
@@ -128,6 +137,6 @@ class ChatServer:
         receive_thread.daemon = True
         receive_thread.start()
 
-root = tk.Tk()
+root = tb.Window(themename="litera")
 server = ChatServer(root)
 root.mainloop()

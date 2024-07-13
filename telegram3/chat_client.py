@@ -1,7 +1,8 @@
-
 import socket
 import threading
 import tkinter as tk
+from tkinter import ttk
+import ttkbootstrap as tb
 import sqlite3
 from queue import Queue
 
@@ -10,6 +11,7 @@ class ChatClient:
         self.master = master
         self.master.title('Chat Client')
         self.master.geometry('400x600')
+        self.master.configure(padx=20, pady=20)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -25,31 +27,46 @@ class ChatClient:
         ''')
         self.conn.commit()
 
-        self.sender_label = tk.Label(master, text='Sender:')
-        self.sender_label.pack()
-        self.sender_entry = tk.Entry(master, width=20)
-        self.sender_entry.pack()
+        self.font = ('Helvetica', 12)
+        self.message_font = ('Arial', 10)
 
-        self.receiver_label = tk.Label(master, text='Receiver:')
-        self.receiver_label.pack()
-        self.receiver_entry = tk.Entry(master, width=20)
-        self.receiver_entry.pack()
-
-        self.message_label = tk.Label(master, text='Message:')
-        self.message_label.pack()
-        self.message_text = tk.Text(master, width=30, height=5)
-        self.message_text.pack()
-
-        self.send_button = tk.Button(master, text='Send', command=self.send_message)
-        self.send_button.pack()
+        self.style = tb.Style()
+        self.style.configure("TEntry", borderwidth=0)
         
-        self.messages_label = tk.Label(master, text='Chat Page')
-        self.messages_label.pack()
+        self.sender_label = ttk.Label(master, text='Sender:', font=self.font)
+        self.sender_label.pack(pady=5)
 
-        self.messages_frame = tk.Frame(master)
-        self.messages_frame.pack(fill=tk.BOTH, expand=True)
+        self.sender_frame = ttk.Frame(master, style="TFrame")
+        self.sender_frame.pack(pady=5, fill=tk.X)
+        self.sender_entry = ttk.Entry(self.sender_frame, width=20, font=self.font, style="TEntry")
+        self.sender_entry.pack(padx=5, pady=5, fill=tk.X)
 
-        self.messages_list = tk.Listbox(self.messages_frame)
+        self.receiver_label = ttk.Label(master, text='Receiver:', font=self.font)
+        self.receiver_label.pack(pady=5)
+
+        self.receiver_frame = ttk.Frame(master, style="TFrame")
+        self.receiver_frame.pack(pady=5, fill=tk.X)
+        self.receiver_entry = ttk.Entry(self.receiver_frame, width=20, font=self.font, style="TEntry")
+        self.receiver_entry.pack(padx=5, pady=5, fill=tk.X)
+
+        self.message_label = ttk.Label(master, text='Message:', font=self.font)
+        self.message_label.pack(pady=5)
+
+        self.message_frame = ttk.Frame(master, style="TFrame")
+        self.message_frame.pack(pady=5, fill=tk.X)
+        self.message_text = tk.Text(self.message_frame, width=30, height=5, font=self.font, bd=0)
+        self.message_text.pack(padx=5, pady=5, fill=tk.X)
+
+        self.send_button = ttk.Button(master, text='Send', command=self.send_message, style="Primary.TButton")
+        self.send_button.pack(pady=10)
+
+        self.messages_label = ttk.Label(master, text='Chat Page', font=self.font)
+        self.messages_label.pack(pady=5)
+
+        self.messages_frame = ttk.Frame(master)
+        self.messages_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+
+        self.messages_list = tk.Listbox(self.messages_frame, font=self.message_font)
         self.messages_list.pack(fill=tk.BOTH, expand=True)
 
         self.queue = Queue()
@@ -90,6 +107,6 @@ class ChatClient:
         receive_thread.daemon = True
         receive_thread.start()
 
-root = tk.Tk()
+root = tb.Window(themename="litera")
 client = ChatClient(root)
 root.mainloop()
