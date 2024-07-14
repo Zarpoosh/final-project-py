@@ -24,7 +24,7 @@ def login(entry_username, entry_password, user_type_var, login_window):
 def signup(login_window):
     signup_window = tk.Toplevel(login_window)
     signup_window.title("Sign Up")
-    signup_window.geometry("400x600")
+    signup_window.geometry("600x600")
 
     tk.Label(signup_window, text="Username", font=("Arial", 14)).grid(row=0, column=0, padx=20, pady=10)
     entry_signup_username = tk.Entry(signup_window, font=("Arial", 14))
@@ -46,11 +46,16 @@ def signup(login_window):
         if username and password:
             conn = sqlite3.connect('library.db')
             c = conn.cursor()
-            c.execute("INSERT INTO users (username, password, usertype) VALUES (?, ?, ?)", (username, password, user_type))
-            conn.commit()
+             # Check if the user already exists
+            c.execute("SELECT * FROM users WHERE username=? AND usertype=?", (username, user_type))
+            if c.fetchone():
+                messagebox.showerror("Sign Up Error", "A user with this username and user type already exists.")
+            else:
+                c.execute("INSERT INTO users (username, password, usertype) VALUES (?, ?, ?)", (username, password, user_type))
+                conn.commit()
+                messagebox.showinfo("Sign Up", "User registered successfully")
+                signup_window.destroy()
             conn.close()
-            messagebox.showinfo("Sign Up", "User registered successfully")
-            signup_window.destroy()
         else:
             messagebox.showwarning("Input Error", "Please enter both username and password.")
 
