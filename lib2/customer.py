@@ -84,3 +84,5 @@ def open_customer_page():
     update_cart_display()
 
     customer_page.mainloop()
+
+

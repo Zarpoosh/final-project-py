@@ -108,3 +108,5 @@ def open_seller_panel():
     update_listbox()
 
     seller_panel.mainloop()
+
+
